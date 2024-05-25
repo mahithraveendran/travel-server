@@ -1,4 +1,4 @@
-import { Prisma, Trip } from "@prisma/client";
+import { Prisma, TravelType, Trip } from "@prisma/client";
 import { IUser } from "../../middleware/jwtUser";
 import { prisma } from "../../utils/prisma";
 
@@ -32,6 +32,7 @@ interface IQuery {
   minBudget: number;
   maxBudget: number;
   searchTerm: string;
+  type: TravelType;
 }
 
 const getPaginatedAndFilteredTrips = async (query: Partial<IQuery>) => {
@@ -45,6 +46,7 @@ const getPaginatedAndFilteredTrips = async (query: Partial<IQuery>) => {
     minBudget,
     maxBudget,
     searchTerm,
+    type,
     ...filterData
   } = query;
 
@@ -72,6 +74,15 @@ const getPaginatedAndFilteredTrips = async (query: Partial<IQuery>) => {
     conditions.push({
       budget: {
         lte: Number(maxBudget),
+      },
+    });
+  }
+
+  // filter trips by travel type
+  if (type) {
+    conditions.push({
+      type: {
+        equals: type,
       },
     });
   }
@@ -183,10 +194,43 @@ const getTripById = async (id: string) => {
   });
 };
 
+// update trip by id
+const updateTripById = async (id: string, trip: Partial<Trip>) => {
+  await prisma.trip.findUniqueOrThrow({
+    where: {
+      id,
+    },
+  });
+
+  return await prisma.trip.update({
+    where: {
+      id,
+    },
+    data: trip,
+  });
+};
+
+// delete trip by id
+const deleteTripById = async (id: string) => {
+  await prisma.trip.findUniqueOrThrow({
+    where: {
+      id,
+    },
+  });
+
+  return await prisma.trip.delete({
+    where: {
+      id,
+    },
+  });
+};
+
 // export the trip service
 export const TripService = {
   createTripIntoDB,
   getTripById,
   getPaginatedAndFilteredTrips,
   travelBuddyRequest,
+  updateTripById,
+  deleteTripById,
 };

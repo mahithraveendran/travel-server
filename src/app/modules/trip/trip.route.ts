@@ -18,7 +18,15 @@ router
   .get(TripController.getPaginatedAndFilteredTrips);
 
 // get single trip by id
-router.route("/trips/:id").get(TripController.getTripById);
+router
+  .route("/trips/:id")
+  .get(TripController.getTripById)
+  .put(
+    authGuard(IUserRole.ADMIN, IUserRole.USER),
+    requestValidation(TripValidation.tripUpdateValidationSchema),
+    TripController.updateTripById
+  )
+  .delete(TripController.deleteTripById);
 
 // send travel buddy request
 router

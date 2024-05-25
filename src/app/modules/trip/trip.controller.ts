@@ -110,9 +110,58 @@ const getTripById = catchAsync(async (req, res) => {
   });
 });
 
+// update trip by id
+const updateTripById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const trip = req.body;
+
+  const updatedTrip = await TripService.updateTripById(id, trip);
+
+  if (!updatedTrip) {
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.BAD_REQUEST,
+      message: "Trip not updated",
+      data: null,
+    });
+  }
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Trip updated successfully",
+    data: updatedTrip,
+  });
+});
+
+// delete trip by id
+const deleteTripById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const deletedTrip = await TripService.deleteTripById(id);
+
+  if (!deletedTrip) {
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.BAD_REQUEST,
+      message: "Trip not deleted",
+      data: null,
+    });
+  }
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Trip deleted successfully",
+    data: deletedTrip,
+  });
+});
+
 export const TripController = {
   createTrip,
   getTripById,
   getPaginatedAndFilteredTrips,
   travelBuddyRequest,
+  updateTripById,
+  deleteTripById,
 };

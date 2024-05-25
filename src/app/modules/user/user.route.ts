@@ -44,7 +44,7 @@ router
 
 // soft delete a user route
 router
-  .route("/:userId/delete")
+  .route("/delete/:userId")
   .delete(authGuard(UserRole.ADMIN), UserController.softDeleteUser);
 
 // update user status route
