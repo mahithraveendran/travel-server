@@ -59,7 +59,7 @@ const createUserIntoDB = async (user: UserWithProfile) => {
 
 // login a user into the system
 const loginUser = async (email: string, password: string) => {
-  const user = await prisma.user.findUnique({
+  const user: any = await prisma.user.findUnique({
     where: {
       email,
     },
@@ -68,6 +68,7 @@ const loginUser = async (email: string, password: string) => {
       name: true,
       email: true,
       password: true,
+      role: true,
     },
   });
 
@@ -83,7 +84,7 @@ const loginUser = async (email: string, password: string) => {
 
   // generate token
   const token = generateToken(
-    { id: user.id, email: user.email },
+    { id: user.id, email: user.email, role: user.role },
     config.jwt_secret as Secret,
     config.expiresIn
   );
@@ -104,6 +105,7 @@ const getUserProfile = async (userId: string) => {
       email: true,
       createdAt: true,
       updatedAt: true,
+      role: true,
     },
   });
 };

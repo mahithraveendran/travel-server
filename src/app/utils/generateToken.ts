@@ -3,6 +3,7 @@ import jwt, { Secret } from "jsonwebtoken";
 interface IPayload {
   id: string;
   email: string;
+  role: string;
 }
 
 export const generateToken = (

@@ -87,8 +87,32 @@ const travelBuddyRequest = catchAsync(async (req, res) => {
   });
 });
 
+// get single trip by id
+const getTripById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const trip = await TripService.getTripById(id);
+
+  if (!trip) {
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.NOT_FOUND,
+      message: "Trip not found",
+      data: null,
+    });
+  }
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Trip retrieved successfully",
+    data: trip,
+  });
+});
+
 export const TripController = {
   createTrip,
+  getTripById,
   getPaginatedAndFilteredTrips,
   travelBuddyRequest,
 };

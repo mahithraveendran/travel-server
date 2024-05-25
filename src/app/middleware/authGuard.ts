@@ -4,10 +4,13 @@ import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import { config } from "../config";
 import { catchAsync } from "../utils/catchAsync";
 import { prisma } from "../utils/prisma";
+import { IUserRole } from "./../../types/index";
 
-const authGuard = () => {
+// auth guard middleware
+const authGuard = (...roles: IUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization;
+    console.log({ token });
 
     if (!token) {
       return sendJWTErrorResponse(res);
@@ -26,12 +29,18 @@ const authGuard = () => {
           id: (decodedToken as JwtPayload).id,
         },
       });
+      console.log({ isUserExist });
 
       if (!isUserExist) {
         return sendJWTErrorResponse(res);
       }
 
       req.user = decodedToken as JwtPayload;
+
+      // check if user role is allowed to access the route
+      if (roles.length && !roles.includes(isUserExist.role as IUserRole)) {
+        return sendJWTErrorResponse(res);
+      }
 
       next();
     } catch (error: any) {

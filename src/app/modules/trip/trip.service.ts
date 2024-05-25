@@ -164,8 +164,29 @@ const travelBuddyRequest = async (tripId: string, userId: string) => {
   return requestedTravelBuddy;
 };
 
+// get single trip by id
+const getTripById = async (id: string) => {
+  return await prisma.trip.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      },
+    },
+  });
+};
+
+// export the trip service
 export const TripService = {
   createTripIntoDB,
+  getTripById,
   getPaginatedAndFilteredTrips,
   travelBuddyRequest,
 };

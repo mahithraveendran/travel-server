@@ -59,7 +59,20 @@ const respondToTravelBuddyRequest = async (
   });
 };
 
+// check the user is already send a travel buddy request
+const checkTravelBuddyRequest = async (tripId: string, userId: string) => {
+  console.log(tripId, userId);
+
+  return await prisma.travelBuddy.findFirst({
+    where: {
+      tripId,
+      userId,
+    },
+  });
+};
+
 export const TravelBuddyService = {
   getPotentialTravelBuddies,
   respondToTravelBuddyRequest,
+  checkTravelBuddyRequest,
 };

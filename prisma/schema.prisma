@@ -21,6 +21,7 @@ model User {
   password    String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  role        String        @default("USER")
   trip        Trip[]
   travelBuddy TravelBuddy[]
   userProfile UserProfile?
@@ -32,6 +33,7 @@ model UserProfile {
   userId    String   @unique
   bio       String
   age       Int
+  image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -47,6 +49,8 @@ model Trip {
   endDate     String
   budget      Int
   activities  String[]
+  image       String?
+  description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -72,4 +76,10 @@ enum Status {
   PENDING
   APPROVED
   REJECTED
+}
+
+// enum for role
+enum UserRole {
+  USER
+  ADMIN
 }

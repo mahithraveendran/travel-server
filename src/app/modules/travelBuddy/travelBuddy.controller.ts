@@ -1,4 +1,5 @@
 import httpStatus from "http-status";
+import { IUser } from "../../middleware/jwtUser";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { TravelBuddyService } from "./travelBuddy.service";
@@ -46,7 +47,37 @@ const respondToTravelBuddyRequest = catchAsync(async (req, res) => {
   });
 });
 
+// check if user is a potential travel buddy
+const checkTravelBuddyRequest = catchAsync(async (req, res) => {
+  const { tripId } = req.params;
+  const { id } = req.user as IUser;
+
+  console.log({ tripId, id });
+
+  const isPotentialBuddy = await TravelBuddyService.checkTravelBuddyRequest(
+    tripId,
+    id
+  );
+
+  if (!isPotentialBuddy) {
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.OK,
+      message: "User is not a potential travel buddy",
+      data: null,
+    });
+  }
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User is a potential travel buddy",
+    data: isPotentialBuddy,
+  });
+});
+
 export const TravelBuddyController = {
   getPotentialTravelBuddies,
   respondToTravelBuddyRequest,
+  checkTravelBuddyRequest,
 };
