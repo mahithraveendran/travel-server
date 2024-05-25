@@ -1,4 +1,4 @@
-import { User, UserProfile } from "@prisma/client";
+import { User, UserProfile, UserStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
 import httpStatus from "http-status";
 import { Secret } from "jsonwebtoken";
@@ -62,6 +62,7 @@ const loginUser = async (email: string, password: string) => {
   const user: any = await prisma.user.findUnique({
     where: {
       email,
+      status: UserStatus.ACTIVE,
     },
     select: {
       id: true,
@@ -98,6 +99,7 @@ const getUserProfile = async (userId: string) => {
   return prisma.user.findUniqueOrThrow({
     where: {
       id: userId,
+      status: UserStatus.ACTIVE,
     },
     select: {
       id: true,
@@ -124,6 +126,7 @@ const updateUserProfile = async (userId: string, profile: Partial<User>) => {
   await prisma.user.findUniqueOrThrow({
     where: {
       id: userId,
+      status: UserStatus.ACTIVE,
     },
   });
 
@@ -142,10 +145,85 @@ const updateUserProfile = async (userId: string, profile: Partial<User>) => {
   });
 };
 
+// change user password
+const changeUserPassword = async (
+  userId: string,
+  { oldPassword, newPassword }: { oldPassword: string; newPassword: string }
+) => {
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+      status: UserStatus.ACTIVE,
+    },
+    select: {
+      id: true,
+      password: true,
+    },
+  });
+
+  const isPasswordMatched = await bcrypt.compare(oldPassword, user.password);
+
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials");
+  }
+
+  const hashPassword = await bcrypt.hash(newPassword, config.salt_round);
+
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      password: hashPassword,
+    },
+  });
+};
+
+// soft delete a user
+const deleteUser = async (userId: string) => {
+  await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  return prisma.user.update({
+    where: {
+      id: userId,
+      status: UserStatus.ACTIVE,
+    },
+    data: {
+      isDeleted: true,
+    },
+  });
+};
+
+// update user status
+const updateUserStatus = async (userId: string, status: UserStatus) => {
+  await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+  });
+
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      status,
+    },
+  });
+};
+
 // export user service
 export const UserService = {
   createUserIntoDB,
   loginUser,
   getUserProfile,
   updateUserProfile,
+  changeUserPassword,
+  deleteUser,
+  updateUserStatus,
 };

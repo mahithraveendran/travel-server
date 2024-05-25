@@ -1,13 +1,13 @@
+import { UserRole } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import { config } from "../config";
 import { catchAsync } from "../utils/catchAsync";
 import { prisma } from "../utils/prisma";
-import { IUserRole } from "./../../types/index";
 
 // auth guard middleware
-const authGuard = (...roles: IUserRole[]) => {
+const authGuard = (...roles: UserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization;
     console.log({ token });
@@ -38,7 +38,7 @@ const authGuard = (...roles: IUserRole[]) => {
       req.user = decodedToken as JwtPayload;
 
       // check if user role is allowed to access the route
-      if (roles.length && !roles.includes(isUserExist.role as IUserRole)) {
+      if (roles.length && !roles.includes(isUserExist.role as UserRole)) {
         return sendJWTErrorResponse(res);
       }
 

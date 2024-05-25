@@ -1,3 +1,4 @@
+import { UserRole } from "@prisma/client";
 import express from "express";
 import authGuard from "../../middleware/authGuard";
 import requestValidation from "../../middleware/requestValidation";
@@ -30,6 +31,29 @@ router
     authGuard(),
     requestValidation(userValidationSchema.updateUserProfileValidationSchema),
     UserController.updateUserProfile
+  );
+
+// change user password route
+router
+  .route("/change-password")
+  .put(
+    authGuard(UserRole.USER, UserRole.ADMIN),
+    requestValidation(userValidationSchema.changeUserPasswordValidationSchema),
+    UserController.changeUserPassword
+  );
+
+// soft delete a user route
+router
+  .route("/:userId/delete")
+  .delete(authGuard(UserRole.ADMIN), UserController.softDeleteUser);
+
+// update user status route
+router
+  .route("/status/:userId")
+  .put(
+    authGuard(UserRole.ADMIN),
+    requestValidation(userValidationSchema.updateUserStatusValidationSchema),
+    UserController.updateUserStatus
   );
 
 export const userRoutes = router;

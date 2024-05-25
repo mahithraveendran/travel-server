@@ -23,7 +23,8 @@ model User {
   updatedAt   DateTime      @updatedAt
   role        UserRole      @default(USER)
   trip        Trip[]
-  status      Status        @default(PENDING)
+  status      UserStatus  @default(ACTIVE)
+  isDeleted   Boolean       @default(false)
   travelBuddy TravelBuddy[]
   userProfile UserProfile?
 }
@@ -66,10 +67,9 @@ model TravelBuddy {
   id        String   @id @default(uuid())
   tripId    String
   userId    String
-  status    UserStatus  @default(ACTIVE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  status      Status        @default(PENDING)
   trip Trip @relation(fields: [tripId], references: [id])
   user User @relation(fields: [userId], references: [id])
 }

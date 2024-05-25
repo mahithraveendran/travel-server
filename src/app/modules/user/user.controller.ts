@@ -76,10 +76,56 @@ const updateUserProfile = catchAsync(async (req, res) => {
   });
 });
 
+// change user password controller
+const changeUserPassword = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+
+  const user = await UserService.changeUserPassword(userId, req.body);
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User password changed successfully",
+    data: user,
+  });
+});
+
+// soft delete a user controller
+const softDeleteUser = catchAsync(async (req, res) => {
+  const userId = req.params.userId;
+
+  const user = await UserService.deleteUser(userId);
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User deleted successfully",
+    data: user,
+  });
+});
+
+// update user status controller
+const updateUserStatus = catchAsync(async (req, res) => {
+  const userId = req.params.userId;
+  const status = req.body.status;
+
+  const user = await UserService.updateUserStatus(userId, status);
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User status updated successfully",
+    data: user,
+  });
+});
+
 // export user controller
 export const UserController = {
   createUser,
   loginUser,
   getUserProfile,
   updateUserProfile,
+  changeUserPassword,
+  softDeleteUser,
+  updateUserStatus,
 };
