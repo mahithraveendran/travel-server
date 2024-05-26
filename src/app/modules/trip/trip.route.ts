@@ -33,4 +33,9 @@ router
   .route("/trip/:tripId/request")
   .post(authGuard(IUserRole.USER), TripController.travelBuddyRequest);
 
+// get travel buddies for a user
+router
+  .route("/trip/my-travel-buddies")
+  .get(authGuard(IUserRole.USER), TripController.getMyTravelBuddies);
+
 export const tripRoutes = router;

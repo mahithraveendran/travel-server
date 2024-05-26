@@ -157,6 +157,20 @@ const deleteTripById = catchAsync(async (req, res) => {
   });
 });
 
+// get travel buddies for a user
+const getMyTravelBuddies = catchAsync(async (req, res) => {
+  const user = req.user as IUser;
+
+  const travelBuddies = await TripService.getMyTravelBuddies(user.id);
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Travel buddies retrieved successfully",
+    data: travelBuddies,
+  });
+});
+
 export const TripController = {
   createTrip,
   getTripById,
@@ -164,4 +178,5 @@ export const TripController = {
   travelBuddyRequest,
   updateTripById,
   deleteTripById,
+  getMyTravelBuddies,
 };

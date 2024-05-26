@@ -225,6 +225,18 @@ const deleteTripById = async (id: string) => {
   });
 };
 
+// get all travel buddies for a user
+const getMyTravelBuddies = async (userId: string) => {
+  return await prisma.travelBuddy.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      trip: true,
+    },
+  });
+};
+
 // export the trip service
 export const TripService = {
   createTripIntoDB,
@@ -233,4 +245,5 @@ export const TripService = {
   travelBuddyRequest,
   updateTripById,
   deleteTripById,
+  getMyTravelBuddies,
 };
