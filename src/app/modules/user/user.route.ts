@@ -50,10 +50,25 @@ router
 // update user status route
 router
   .route("/status/:userId")
-  .put(
+  .patch(
     authGuard(UserRole.ADMIN),
     requestValidation(userValidationSchema.updateUserStatusValidationSchema),
     UserController.updateUserStatus
   );
+
+// change user role route
+
+router
+  .route("/role/:userId")
+  .patch(
+    authGuard(UserRole.ADMIN),
+    requestValidation(userValidationSchema.changeUserRoleValidationSchema),
+    UserController.changeUserRole
+  );
+
+// get all user for only admin
+router
+  .route("/users")
+  .get(authGuard(UserRole.ADMIN), UserController.getAllUsers);
 
 export const userRoutes = router;

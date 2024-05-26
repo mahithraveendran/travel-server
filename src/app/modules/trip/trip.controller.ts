@@ -171,6 +171,20 @@ const getMyTravelBuddies = catchAsync(async (req, res) => {
   });
 });
 
+// get all trip which is posted by a user
+const getMyTrips = catchAsync(async (req, res) => {
+  const user = req.user as IUser;
+
+  const trips = await TripService.getMyTrips(user.id);
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Trips retrieved successfully",
+    data: trips,
+  });
+});
+
 export const TripController = {
   createTrip,
   getTripById,
@@ -179,4 +193,5 @@ export const TripController = {
   updateTripById,
   deleteTripById,
   getMyTravelBuddies,
+  getMyTrips,
 };

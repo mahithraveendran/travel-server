@@ -1,4 +1,4 @@
-import { UserStatus } from "@prisma/client";
+import { UserRole, UserStatus } from "@prisma/client";
 import { z } from "zod";
 
 // create user validation schema
@@ -13,6 +13,7 @@ const createUserValidationSchema = z.object({
       })
       .email(),
     password: z.string().min(8).max(255),
+    userName: z.string().min(3).max(255).optional(),
     profile: z
       .object(
         {
@@ -58,10 +59,18 @@ const updateUserStatusValidationSchema = z.object({
   }),
 });
 
+// user role update validation schema
+const changeUserRoleValidationSchema = z.object({
+  body: z.object({
+    role: z.nativeEnum(UserRole),
+  }),
+});
+
 export const userValidationSchema = {
   createUserValidationSchema,
   loginUserValidationSchema,
   updateUserProfileValidationSchema,
   changeUserPasswordValidationSchema,
   updateUserStatusValidationSchema,
+  changeUserRoleValidationSchema,
 };

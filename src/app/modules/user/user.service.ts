@@ -1,4 +1,4 @@
-import { User, UserProfile, UserStatus } from "@prisma/client";
+import { User, UserProfile, UserRole, UserStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
 import httpStatus from "http-status";
 import { Secret } from "jsonwebtoken";
@@ -16,7 +16,7 @@ const createUserIntoDB = async (user: UserWithProfile) => {
   const { profile, ...userData } = user;
 
   // check if user already exists
-  const existingUser = await prisma.user.findUniqueOrThrow({
+  const existingUser = await prisma.user.findUnique({
     where: {
       email: userData.email,
     },
@@ -108,13 +108,20 @@ const getUserProfile = async (userId: string) => {
       createdAt: true,
       updatedAt: true,
       role: true,
+      userProfile: true,
+      userName: true,
     },
   });
 };
 
 // update user profile
-const updateUserProfile = async (userId: string, profile: Partial<User>) => {
-  const { password, ...userWithoutPassword } = profile;
+const updateUserProfile = async (
+  userId: string,
+  profile: Partial<User> & { userProfile: Partial<UserProfile> }
+) => {
+  const { password, userProfile, ...userWithoutPassword } = profile;
+
+  console.log({ password, userProfile, userWithoutPassword, profile });
 
   if (password) {
     throw new AppError(
@@ -130,18 +137,39 @@ const updateUserProfile = async (userId: string, profile: Partial<User>) => {
     },
   });
 
-  return prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: userWithoutPassword,
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      createdAt: true,
-      updatedAt: true,
-    },
+  // use transaction to update user and user profile
+  return prisma.$transaction(async (tx) => {
+    const updatedUser = await tx.user.update({
+      where: {
+        id: userId,
+      },
+      data: userWithoutPassword,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+        role: true,
+      },
+    });
+
+    if (userProfile) {
+      await tx.userProfile.upsert({
+        where: {
+          userId,
+        },
+        create: {
+          ...userProfile,
+          userId,
+          bio: userProfile.bio || "",
+          age: userProfile.age || 18,
+        },
+        update: userProfile,
+      });
+    }
+
+    return updatedUser;
   });
 };
 
@@ -217,6 +245,64 @@ const updateUserStatus = async (userId: string, status: UserStatus) => {
   });
 };
 
+// change user role
+const changeUserRole = async (userId: string, role: UserRole) => {
+  await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+  });
+
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      role,
+    },
+  });
+};
+
+// get all users for admin user management with pagination must include
+
+const getAllUsers = async ({
+  page = "1",
+  limit = "10",
+}: {
+  page?: string;
+  limit?: string;
+}) => {
+  // calculate the skip values
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const result = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      userProfile: true,
+      isDeleted: true,
+    },
+    take: Number(limit),
+    skip,
+  });
+
+  const total = await prisma.user.count();
+
+  return {
+    meta: {
+      page: Number(page),
+      limit: Number(limit),
+      total,
+    },
+    data: result,
+  };
+};
+
 // export user service
 export const UserService = {
   createUserIntoDB,
@@ -226,4 +312,6 @@ export const UserService = {
   changeUserPassword,
   deleteUser,
   updateUserStatus,
+  changeUserRole,
+  getAllUsers,
 };

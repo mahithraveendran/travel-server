@@ -119,6 +119,38 @@ const updateUserStatus = catchAsync(async (req, res) => {
   });
 });
 
+// change user role controller
+const changeUserRole = catchAsync(async (req, res) => {
+  const userId = req.params.userId;
+  const role = req.body.role;
+
+  const user = await UserService.changeUserRole(userId, role);
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User role changed successfully",
+    data: user,
+  });
+});
+
+// get all user controller
+const getAllUsers = catchAsync(async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const users = await UserService.getAllUsers({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Users retrieved successfully",
+    data: users.data,
+    meta: users.meta,
+  });
+});
+
 // export user controller
 export const UserController = {
   createUser,
@@ -128,4 +160,6 @@ export const UserController = {
   changeUserPassword,
   softDeleteUser,
   updateUserStatus,
+  changeUserRole,
+  getAllUsers,
 };

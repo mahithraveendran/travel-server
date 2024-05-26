@@ -1,5 +1,5 @@
+import { UserRole } from "@prisma/client";
 import express from "express";
-import { IUserRole } from "../../../types";
 import authGuard from "../../middleware/authGuard";
 import requestValidation from "../../middleware/requestValidation";
 import { TripController } from "./trip.controller";
@@ -11,7 +11,7 @@ const router = express.Router();
 router
   .route("/trips")
   .post(
-    authGuard(IUserRole.ADMIN, IUserRole.USER),
+    authGuard(UserRole.ADMIN, UserRole.USER),
     requestValidation(TripValidation.tripCreateValidationSchema),
     TripController.createTrip
   )
@@ -22,7 +22,7 @@ router
   .route("/trips/:id")
   .get(TripController.getTripById)
   .put(
-    authGuard(IUserRole.ADMIN, IUserRole.USER),
+    authGuard(UserRole.ADMIN, UserRole.USER),
     requestValidation(TripValidation.tripUpdateValidationSchema),
     TripController.updateTripById
   )
@@ -31,11 +31,16 @@ router
 // send travel buddy request
 router
   .route("/trip/:tripId/request")
-  .post(authGuard(IUserRole.USER), TripController.travelBuddyRequest);
+  .post(authGuard(UserRole.USER), TripController.travelBuddyRequest);
 
 // get travel buddies for a user
 router
   .route("/trip/my-travel-buddies")
-  .get(authGuard(IUserRole.USER), TripController.getMyTravelBuddies);
+  .get(authGuard(UserRole.USER), TripController.getMyTravelBuddies);
+
+// get all trip which is posted by a user
+router
+  .route("/trip/my-trips")
+  .get(authGuard(UserRole.USER, UserRole.ADMIN), TripController.getMyTrips);
 
 export const tripRoutes = router;
