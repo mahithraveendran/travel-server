@@ -11,7 +11,13 @@ const routes_1 = require("./app/routes");
 const app = (0, express_1.default)();
 // use middlewares
 app.use(express_1.default.json());
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: [
+        "http://localhost:3000",
+        "https://dream-destination-travel.vercel.app",
+    ],
+    credentials: true,
+}));
 // default route
 app.get("/", (req, res) => {
     res.json({ message: "Travel buddy server is running..." });

@@ -130,6 +130,19 @@ const getPaginatedAndFilteredTrips = async (query: Partial<IQuery>) => {
 
   const result = await prisma.trip.findMany({
     where: whereConditions,
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+          userProfile: {
+            select: {
+              image: true,
+            },
+          },
+        },
+      },
+    },
     orderBy: {
       [sortBy as string]: sortOrder,
     },

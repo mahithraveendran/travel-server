@@ -15,12 +15,14 @@ const simplifiedError = (err) => {
     return { success, message, errorDetails, statusCode };
 };
 const globalErrorHandler = (err, req, res, next) => {
+    console.log({ err });
     // simplified error
     const { success, message, errorDetails, statusCode } = simplifiedError(err);
-    res.status(statusCode).json({
+    res.status(statusCode || 500).json({
         success: success,
         message: message,
         errorDetails,
+        error: err,
     });
 };
 exports.default = globalErrorHandler;

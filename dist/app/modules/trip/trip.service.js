@@ -27,7 +27,7 @@ const createTripIntoDB = (trip, user) => __awaiter(void 0, void 0, void 0, funct
 });
 const getPaginatedAndFilteredTrips = (query) => __awaiter(void 0, void 0, void 0, function* () {
     console.log({ fromService: query });
-    const { page = 1, limit = 10, sortBy = "budget", sortOrder = "asc", minBudget, maxBudget, searchTerm } = query, filterData = __rest(query, ["page", "limit", "sortBy", "sortOrder", "minBudget", "maxBudget", "searchTerm"]);
+    const { page = 1, limit = 10, sortBy = "budget", sortOrder = "asc", minBudget, maxBudget, searchTerm, type } = query, filterData = __rest(query, ["page", "limit", "sortBy", "sortOrder", "minBudget", "maxBudget", "searchTerm", "type"]);
     const conditions = [];
     // filter trips by minBudget and maxBudget
     if (minBudget && maxBudget) {
@@ -49,6 +49,14 @@ const getPaginatedAndFilteredTrips = (query) => __awaiter(void 0, void 0, void 0
         conditions.push({
             budget: {
                 lte: Number(maxBudget),
+            },
+        });
+    }
+    // filter trips by travel type
+    if (type) {
+        conditions.push({
+            type: {
+                equals: type,
             },
         });
     }
@@ -127,8 +135,78 @@ const travelBuddyRequest = (tripId, userId) => __awaiter(void 0, void 0, void 0,
     });
     return requestedTravelBuddy;
 });
+// get single trip by id
+const getTripById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield prisma_1.prisma.trip.findUnique({
+        where: {
+            id,
+        },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                },
+            },
+        },
+    });
+});
+// update trip by id
+const updateTripById = (id, trip) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma_1.prisma.trip.findUniqueOrThrow({
+        where: {
+            id,
+        },
+    });
+    return yield prisma_1.prisma.trip.update({
+        where: {
+            id,
+        },
+        data: trip,
+    });
+});
+// delete trip by id
+const deleteTripById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma_1.prisma.trip.findUniqueOrThrow({
+        where: {
+            id,
+        },
+    });
+    return yield prisma_1.prisma.trip.delete({
+        where: {
+            id,
+        },
+    });
+});
+// get all travel buddies for a user
+const getMyTravelBuddies = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield prisma_1.prisma.travelBuddy.findMany({
+        where: {
+            userId,
+        },
+        include: {
+            trip: true,
+        },
+    });
+});
+// get all trip which is posted by a user
+const getMyTrips = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield prisma_1.prisma.trip.findMany({
+        where: {
+            userId,
+        },
+    });
+});
+// export the trip service
 exports.TripService = {
     createTripIntoDB,
+    getTripById,
     getPaginatedAndFilteredTrips,
     travelBuddyRequest,
+    updateTripById,
+    deleteTripById,
+    getMyTravelBuddies,
+    getMyTrips,
 };

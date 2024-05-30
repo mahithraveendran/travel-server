@@ -60,7 +60,18 @@ const respondToTravelBuddyRequest = (buddyId, tripId, status) => __awaiter(void 
         },
     });
 });
+// check the user is already send a travel buddy request
+const checkTravelBuddyRequest = (tripId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(tripId, userId);
+    return yield prisma_1.prisma.travelBuddy.findFirst({
+        where: {
+            tripId,
+            userId,
+        },
+    });
+});
 exports.TravelBuddyService = {
     getPotentialTravelBuddies,
     respondToTravelBuddyRequest,
+    checkTravelBuddyRequest,
 };

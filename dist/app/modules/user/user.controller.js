@@ -18,6 +18,7 @@ const catchAsync_1 = require("../../utils/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
 const user_service_1 = require("./user.service");
 const createUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log({ req: req.body });
     const user = yield user_service_1.UserService.createUserIntoDB(req.body);
     if (!user) {
         return (0, sendResponse_1.sendResponse)(res, {
@@ -77,10 +78,77 @@ const updateUserProfile = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(v
         data: user,
     });
 }));
+// change user password controller
+const changeUserPassword = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c;
+    const userId = (_c = req.user) === null || _c === void 0 ? void 0 : _c.id;
+    const user = yield user_service_1.UserService.changeUserPassword(userId, req.body);
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "User password changed successfully",
+        data: user,
+    });
+}));
+// soft delete a user controller
+const softDeleteUser = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.userId;
+    const user = yield user_service_1.UserService.deleteUser(userId);
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "User deleted successfully",
+        data: user,
+    });
+}));
+// update user status controller
+const updateUserStatus = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.userId;
+    const status = req.body.status;
+    const user = yield user_service_1.UserService.updateUserStatus(userId, status);
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "User status updated successfully",
+        data: user,
+    });
+}));
+// change user role controller
+const changeUserRole = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.userId;
+    const role = req.body.role;
+    const user = yield user_service_1.UserService.changeUserRole(userId, role);
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "User role changed successfully",
+        data: user,
+    });
+}));
+// get all user controller
+const getAllUsers = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page = 1, limit = 10 } = req.query;
+    const users = yield user_service_1.UserService.getAllUsers({
+        page: String(page),
+        limit: String(limit),
+    });
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Users retrieved successfully",
+        data: users.data,
+        meta: users.meta,
+    });
+}));
 // export user controller
 exports.UserController = {
     createUser,
     loginUser,
     getUserProfile,
     updateUserProfile,
+    changeUserPassword,
+    softDeleteUser,
+    updateUserStatus,
+    changeUserRole,
+    getAllUsers,
 };

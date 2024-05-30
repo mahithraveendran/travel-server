@@ -18,9 +18,11 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
 const catchAsync_1 = require("../utils/catchAsync");
 const prisma_1 = require("../utils/prisma");
-const authGuard = () => {
+// auth guard middleware
+const authGuard = (...roles) => {
     return (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const token = req.headers.authorization;
+        console.log({ token });
         if (!token) {
             return (0, exports.sendJWTErrorResponse)(res);
         }
@@ -35,10 +37,15 @@ const authGuard = () => {
                     id: decodedToken.id,
                 },
             });
+            console.log({ isUserExist });
             if (!isUserExist) {
                 return (0, exports.sendJWTErrorResponse)(res);
             }
             req.user = decodedToken;
+            // check if user role is allowed to access the route
+            if (roles.length && !roles.includes(isUserExist.role)) {
+                return (0, exports.sendJWTErrorResponse)(res);
+            }
             next();
         }
         catch (error) {

@@ -86,8 +86,93 @@ const travelBuddyRequest = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(
         data: travelBuddy,
     });
 }));
+// get single trip by id
+const getTripById = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const trip = yield trip_service_1.TripService.getTripById(id);
+    if (!trip) {
+        return (0, sendResponse_1.sendResponse)(res, {
+            success: false,
+            statusCode: http_status_1.default.NOT_FOUND,
+            message: "Trip not found",
+            data: null,
+        });
+    }
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Trip retrieved successfully",
+        data: trip,
+    });
+}));
+// update trip by id
+const updateTripById = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const trip = req.body;
+    const updatedTrip = yield trip_service_1.TripService.updateTripById(id, trip);
+    if (!updatedTrip) {
+        return (0, sendResponse_1.sendResponse)(res, {
+            success: false,
+            statusCode: http_status_1.default.BAD_REQUEST,
+            message: "Trip not updated",
+            data: null,
+        });
+    }
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Trip updated successfully",
+        data: updatedTrip,
+    });
+}));
+// delete trip by id
+const deleteTripById = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const deletedTrip = yield trip_service_1.TripService.deleteTripById(id);
+    if (!deletedTrip) {
+        return (0, sendResponse_1.sendResponse)(res, {
+            success: false,
+            statusCode: http_status_1.default.BAD_REQUEST,
+            message: "Trip not deleted",
+            data: null,
+        });
+    }
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Trip deleted successfully",
+        data: deletedTrip,
+    });
+}));
+// get travel buddies for a user
+const getMyTravelBuddies = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const travelBuddies = yield trip_service_1.TripService.getMyTravelBuddies(user.id);
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Travel buddies retrieved successfully",
+        data: travelBuddies,
+    });
+}));
+// get all trip which is posted by a user
+const getMyTrips = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const trips = yield trip_service_1.TripService.getMyTrips(user.id);
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Trips retrieved successfully",
+        data: trips,
+    });
+}));
 exports.TripController = {
     createTrip,
+    getTripById,
     getPaginatedAndFilteredTrips,
     travelBuddyRequest,
+    updateTripById,
+    deleteTripById,
+    getMyTravelBuddies,
+    getMyTrips,
 };

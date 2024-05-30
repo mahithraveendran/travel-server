@@ -47,7 +47,29 @@ const respondToTravelBuddyRequest = (0, catchAsync_1.catchAsync)((req, res) => _
         data: respondedBuddy,
     });
 }));
+// check if user is a potential travel buddy
+const checkTravelBuddyRequest = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { tripId } = req.params;
+    const { id } = req.user;
+    console.log({ tripId, id });
+    const isPotentialBuddy = yield travelBuddy_service_1.TravelBuddyService.checkTravelBuddyRequest(tripId, id);
+    if (!isPotentialBuddy) {
+        return (0, sendResponse_1.sendResponse)(res, {
+            success: false,
+            statusCode: http_status_1.default.OK,
+            message: "User is not a potential travel buddy",
+            data: null,
+        });
+    }
+    return (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "User is a potential travel buddy",
+        data: isPotentialBuddy,
+    });
+}));
 exports.TravelBuddyController = {
     getPotentialTravelBuddies,
     respondToTravelBuddyRequest,
+    checkTravelBuddyRequest,
 };
