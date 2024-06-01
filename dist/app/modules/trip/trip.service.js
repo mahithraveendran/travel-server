@@ -97,6 +97,19 @@ const getPaginatedAndFilteredTrips = (query) => __awaiter(void 0, void 0, void 0
     console.dir({ query, conditions, whereConditions }, { depth: Infinity });
     const result = yield prisma_1.prisma.trip.findMany({
         where: whereConditions,
+        include: {
+            user: {
+                select: {
+                    name: true,
+                    email: true,
+                    userProfile: {
+                        select: {
+                            image: true,
+                        },
+                    },
+                },
+            },
+        },
         orderBy: {
             [sortBy]: sortOrder,
         },
