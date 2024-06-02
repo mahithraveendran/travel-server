@@ -18,7 +18,6 @@ app.use((0, cors_1.default)({
     ],
     credentials: true,
 }));
-// app.use(cors());
 // default route
 app.get("/", (req, res) => {
     res.json({ message: "Travel buddy server is running..." });

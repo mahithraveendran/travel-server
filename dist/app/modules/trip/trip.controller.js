@@ -50,6 +50,8 @@ const getPaginatedAndFilteredTrips = (0, catchAsync_1.catchAsync)((req, res) => 
         "minBudget",
         "maxBudget",
         "searchTerm",
+        "type",
+        "description",
     ];
     const pickedQuery = Object.keys(query).map((key) => {
         if (queryKeys.includes(key)) {

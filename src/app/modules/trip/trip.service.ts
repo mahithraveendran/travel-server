@@ -33,6 +33,7 @@ interface IQuery {
   maxBudget: number;
   searchTerm: string;
   type: TravelType;
+  description: string;
 }
 
 const getPaginatedAndFilteredTrips = async (query: Partial<IQuery>) => {
@@ -83,6 +84,16 @@ const getPaginatedAndFilteredTrips = async (query: Partial<IQuery>) => {
     conditions.push({
       type: {
         equals: type,
+      },
+    });
+  }
+
+  // add text search for description
+  if (query.description) {
+    conditions.push({
+      description: {
+        contains: query.description,
+        mode: "insensitive",
       },
     });
   }

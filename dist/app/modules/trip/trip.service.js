@@ -60,6 +60,15 @@ const getPaginatedAndFilteredTrips = (query) => __awaiter(void 0, void 0, void 0
             },
         });
     }
+    // add text search for description
+    if (query.description) {
+        conditions.push({
+            description: {
+                contains: query.description,
+                mode: "insensitive",
+            },
+        });
+    }
     // searchTerms
     if (searchTerm) {
         conditions.push({
