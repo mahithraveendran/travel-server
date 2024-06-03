@@ -242,10 +242,19 @@ const deleteTripById = async (id: string) => {
     },
   });
 
-  return await prisma.trip.delete({
-    where: {
-      id,
-    },
+  // delete a trip by id and if the trip id is exist the travel buddy collection will be deleted automatically
+  return prisma.$transaction(async (tx) => {
+    const travelBuddyWithTrip = await tx.travelBuddy.deleteMany({
+      where: {
+        tripId: id,
+      },
+    });
+
+    return await tx.trip.delete({
+      where: {
+        id,
+      },
+    });
   });
 };
 
