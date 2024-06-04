@@ -1,6 +1,6 @@
 # Typescript, Prisma, Node JS Application with PostgreSQL DataBase for travel buddy management application.
 
-Live Site Link: [https://travel-buddy-getmonirr.vercel.app/](https://travel-buddy-getmonirr.vercel.app/)
+Live Site Link: [https://server-dream-destinations.vercel.app](https://server-dream-destinations.vercel.app)
 
 ## Project Overview
 
@@ -20,13 +20,13 @@ This project is a Node.js Express application written in TypeScript that integra
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/Porgramming-Hero-web-course/l2-b2-fullstack-track-assignment-8-getMonirr.git
+   git clone https://github.com/getMonirr/Dream-Destination-Server.git
    ```
 
 2. **Navigate to the project directory:**
 
    ```bash
-   cd l2-b2-fullstack-track-assignment-8-getMonirr
+   cd Dream-Destination-Server
    ```
 
 3. **Install dependencies:**
