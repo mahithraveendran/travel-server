@@ -11,6 +11,8 @@ const getPotentialTravelBuddies = catchAsync(async (req, res) => {
     tripId
   );
 
+  console.log('fetching travel buddy...')
+
   return sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

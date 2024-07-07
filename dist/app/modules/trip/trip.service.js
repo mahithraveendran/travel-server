@@ -196,11 +196,19 @@ const deleteTripById = (id) => __awaiter(void 0, void 0, void 0, function* () {
             id,
         },
     });
-    return yield prisma_1.prisma.trip.delete({
-        where: {
-            id,
-        },
-    });
+    // delete a trip by id and if the trip id is exist the travel buddy collection will be deleted automatically
+    return prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        const travelBuddyWithTrip = yield tx.travelBuddy.deleteMany({
+            where: {
+                tripId: id,
+            },
+        });
+        return yield tx.trip.delete({
+            where: {
+                id,
+            },
+        });
+    }));
 });
 // get all travel buddies for a user
 const getMyTravelBuddies = (userId) => __awaiter(void 0, void 0, void 0, function* () {
